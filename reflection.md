@@ -2,6 +2,12 @@
 
 ## 1. System Design
 
+**Core user actions**
+
+- A user should be able to add their pet and owner details so the planner has the right context for daily care decisions.
+- A user should be able to create and update care tasks (like walks, feeding, or medication) with duration and priority so the scheduler can choose what to include.
+- A user should be able to generate and review today’s care plan so they can see what to do, in what order, and why those tasks were selected.
+
 **a. Initial design**
 
 - Briefly describe your initial UML design.
