@@ -10,8 +10,14 @@
 
 **a. Initial design**
 
-- Briefly describe your initial UML design.
-- What classes did you include, and what responsibilities did you assign to each?
+My initial UML design used six main classes with clear separation between data, task management, and scheduling logic:
+
+- `Owner`: stores owner profile data such as available time and preferences that influence planning.
+- `Pet`: stores pet-specific context (name, type, routine/health notes) used to guide care decisions.
+- `CareTask`: represents one care activity with attributes like duration, priority, recurrence, and status.
+- `TaskManager`: handles task CRUD operations and prepares filtered task lists (for example, tasks due today).
+- `Scheduler`: applies constraints and priority rules to select and order tasks into a realistic daily schedule.
+- `DailyPlan`: stores the generated schedule output (scheduled tasks, unscheduled tasks, totals, and explanation summary) for display in the app.
 
 **b. Design changes**
 
@@ -29,8 +35,9 @@
 
 **b. Tradeoffs**
 
-- Describe one tradeoff your scheduler makes.
-- Why is that tradeoff reasonable for this scenario?
+One tradeoff my scheduler makes is using a lightweight, greedy approach: it ranks tasks by urgency, schedules what fits, and flags overlapping time windows with warnings instead of running a full optimization search for the best global schedule.
+
+This tradeoff is reasonable for this scenario because it keeps the system simple, fast, and explainable for a daily pet-care planner, while still giving useful feedback about conflicts without crashing or requiring complex optimization logic.
 
 ---
 
