@@ -31,6 +31,22 @@ Recent scheduler upgrades add safer and more realistic planning behavior:
 - Recurring rollover: completing a `daily` or `weekly` task auto-creates the next occurrence.
 - Conflict warnings: overlapping task windows are detected and reported as warnings (non-fatal).
 
+## Testing PawPal+
+
+Run the test suite with:
+
+```bash
+python -m pytest
+```
+
+Current tests cover core model behaviors, including:
+
+- Marking tasks complete (status and completion timestamp updates)
+- Adding tasks to a pet
+- Recurring rollover behavior (`daily` creates next-day tasks, `weekly` creates next-week tasks)
+
+Confidence Level: `★★★★☆` (4/5) based on passing core behavior tests, with room to add broader edge-case and integration coverage.
+
 ## Getting started
 
 ### Setup
