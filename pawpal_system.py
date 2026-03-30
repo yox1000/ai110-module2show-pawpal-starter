@@ -193,8 +193,9 @@ class Owner:
 
     def remove_pet(self, pet_name: str) -> bool:
         """Remove a pet by name."""
+        original_count = len(self.pets)
         self.pets = [p for p in self.pets if p.name != pet_name]
-        return len(self.pets) < len(self.pets)
+        return len(self.pets) < original_count
 
     def get_all_tasks(self) -> Dict[str, List[CareTask]]:
         """Get all tasks across all pets."""

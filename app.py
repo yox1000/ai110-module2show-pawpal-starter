@@ -187,7 +187,41 @@ for pet in owner.pets:
 
 if all_tasks:
     st.write("Current tasks:")
-    st.table(all_tasks)
+    status_filter_col, pet_filter_col = st.columns(2)
+    with status_filter_col:
+        selected_status = st.selectbox(
+            "Filter by status",
+            ["all", "pending", "completed", "skipped"],
+            index=0,
+        )
+    with pet_filter_col:
+        selected_pet_name = st.selectbox(
+            "Filter by pet",
+            ["all"] + [pet.name for pet in owner.pets],
+            index=0,
+        )
+
+    filtered_tasks = owner.filter_tasks(
+        status=None if selected_status == "all" else selected_status,
+        pet_name=None if selected_pet_name == "all" else selected_pet_name,
+    )
+
+    scheduler_preview = Scheduler(owner)
+    filtered_tasks_sorted = scheduler_preview.sort_by_time(filtered_tasks)
+    st.table(
+        [
+            {
+                "pet": find_pet_name(owner, task),
+                "title": task.title,
+                "type": task.task_type,
+                "window": task.due_window,
+                "duration_minutes": task.duration_minutes,
+                "priority": task.priority,
+                "status": task.status,
+            }
+            for task in filtered_tasks_sorted
+        ]
+    )
 else:
     st.info("No tasks yet. Add one above.")
 
@@ -208,8 +242,11 @@ if st.button("Generate schedule"):
 if st.session_state.last_plan is not None:
     plan = st.session_state.last_plan
     st.success("Schedule generated.")
+    scheduler_display = Scheduler(owner)
+    sorted_scheduled_tasks = scheduler_display.sort_by_time(plan.scheduled_items)
+    sorted_unscheduled_tasks = scheduler_display.sort_by_time(plan.unscheduled_items)
 
-    if plan.scheduled_items:
+    if sorted_scheduled_tasks:
         st.write("Scheduled tasks:")
         st.table(
             [
@@ -221,24 +258,36 @@ if st.session_state.last_plan is not None:
                     "priority": task.priority,
                     "reason": st.session_state.plan_explanations.get(task.id, ""),
                 }
-                for task in plan.scheduled_items
+                for task in sorted_scheduled_tasks
             ]
         )
     else:
         st.info("No tasks were scheduled.")
 
-    if plan.unscheduled_items:
+    if sorted_unscheduled_tasks:
         st.write("Unscheduled tasks:")
         st.table(
             [
                 {
                     "pet": find_pet_name(owner, task),
                     "title": task.title,
+                    "window": task.due_window,
                     "duration_minutes": task.duration_minutes,
                     "reason": st.session_state.plan_explanations.get(task.id, ""),
                 }
-                for task in plan.unscheduled_items
+                for task in sorted_unscheduled_tasks
             ]
         )
+
+    if plan.conflict_warnings:
+        st.warning(
+            f"{len(plan.conflict_warnings)} time conflict(s) detected. "
+            "Review and adjust one of the overlapping tasks."
+        )
+        with st.expander("Show conflict details", expanded=True):
+            for warning in plan.conflict_warnings:
+                st.markdown(f"- {warning}")
+    else:
+        st.success("No overlapping task windows detected in this plan.")
 
     st.caption(plan.reasoning_summary)
